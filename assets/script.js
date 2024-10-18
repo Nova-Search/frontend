@@ -15,7 +15,9 @@ const queryParam = urlParams.get('q');
 
 if (queryParam) {
     document.getElementById('query').value = queryParam;
-    searchForm.dispatchEvent(new Event('submit'));
+    setTimeout(() => {
+        searchForm.dispatchEvent(new Event('submit'));
+    }, 0);
 }
 
 // Create ghost result elements
@@ -67,11 +69,49 @@ searchForm.addEventListener('submit', async (e) => {
     }
 });
 
+// Function to get a cookie by name
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+// Function to set a cookie
+function setCookie(name, value, days) {
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    const expires = `expires=${date.toUTCString()}`;
+    document.cookie = `${name}=${value}; ${expires}; path=/`;
+}
+
+// Function to display a hardcoded result
+function displayUpdate() {
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.innerHTML = `
+        <div class="result-wrapper">
+            <div class="result-container">
+                <h1 style="text-align: center;">Welcome to Nova Search!</h1>
+                <p style="text-align: center;">Thank you for trying out Nova! We're a completely independent (and currently in beta) search engine and always improving. If you'd like, you can check out our source code on <a href="https://github.com/Nova-Search" target="_blank">GitHub</a>. This message will disappear next time you come here.</p>
+            </div>
+        </div>
+    `;
+}
+
+// Check if the hasSeenOct18Update cookie is set
+window.addEventListener('load', () => {
+    if (!getCookie('hasSeenWelcomeMessage')) {
+        displayUpdate();
+        setCookie('hasSeenWelcomeMessage', 'true', 365);
+    }
+});
+
+// Modify the displayResults function to clear the hardcoded result upon making a search
 function displayResults() {
     const start = (currentPage - 1) * itemsPerPage;
     const end = start + itemsPerPage;
     const paginatedResults = searchResults.slice(start, end);
 
+    const resultsDiv = document.getElementById('results');
     resultsDiv.innerHTML = paginatedResults.map(result => `
                 <div class="result-wrapper">
                     <div class="result-container">
