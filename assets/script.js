@@ -69,14 +69,12 @@ searchForm.addEventListener('submit', async (e) => {
     }
 });
 
-// Function to get a cookie by name
 function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
-// Function to set a cookie
 function setCookie(name, value, days) {
     const date = new Date();
     date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
@@ -84,7 +82,6 @@ function setCookie(name, value, days) {
     document.cookie = `${name}=${value}; ${expires}; path=/`;
 }
 
-// Function to display a hardcoded result
 function displayUpdate() {
     const resultsDiv = document.getElementById('results');
     resultsDiv.innerHTML = `
@@ -97,7 +94,6 @@ function displayUpdate() {
     `;
 }
 
-// Check if the hasSeenOct18Update cookie is set
 window.addEventListener('load', () => {
     if (!getCookie('hasSeenWelcomeMessage')) {
         displayUpdate();
@@ -105,7 +101,6 @@ window.addEventListener('load', () => {
     }
 });
 
-// Modify the displayResults function to clear the hardcoded result upon making a search
 function displayResults() {
     const start = (currentPage - 1) * itemsPerPage;
     const end = start + itemsPerPage;
