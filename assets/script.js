@@ -47,7 +47,7 @@ searchForm.addEventListener('submit', async (e) => {
     resultsInfoDiv.innerHTML = ''; // Clear previous results info
 
     try {
-        const response = await fetch(`http://127.0.0.1:8000/search?query=${query}`);
+        const response = await fetch(`https://api.novasearch.xyz/search?query=${query}`);
 
         if (response.status === 429) {
             resultsDiv.innerHTML = '<p>Too many requests. Please try again later.</p>';
@@ -117,8 +117,8 @@ function displayResults() {
                     <div class="result-container">
                         <a href="${result.url}" target="_blank">
                             ${result.favicon_id ? (result.favicon_type === 'svg' ?
-            `<object class="favicon" type="image/svg+xml" data="http://127.0.0.1:8000/favicon/${result.favicon_id}"></object>` :
-            `<img class="favicon" src="http://127.0.0.1:8000/favicon/${result.favicon_id}">`) : ''}
+            `<object class="favicon" type="image/svg+xml" data="https://api.novasearch.xyz/favicon/${result.favicon_id}"></object>` :
+            `<img class="favicon" src="https://api.novasearch.xyz/favicon/${result.favicon_id}">`) : ''}
                             ${result.title || "<i class='text-muted'>No title available</i>"}
                         </a>
                         <p class="text-muted small">${result.url}</p>
@@ -147,8 +147,8 @@ function setupFeedbackButtons() {
             const url = button.getAttribute('data-url');
             const isThumbsUp = button.classList.contains('thumbs-up');
             const endpoint = isThumbsUp
-                ? 'http://127.0.0.1:8000/quality/rateresult/good'
-                : 'http://127.0.0.1:8000/quality/rateresult/bad';
+                ? 'https://api.novasearch.xyz/quality/rateresult/good'
+                : 'https://api.novasearch.xyz/quality/rateresult/bad';
 
             try {
                 const response = await fetch(endpoint, {
