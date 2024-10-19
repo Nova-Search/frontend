@@ -1,4 +1,3 @@
-// testing something
 const searchForm = document.getElementById('searchForm');
 const resultsDiv = document.getElementById('results');
 const paginationUl = document.getElementById('pagination');
