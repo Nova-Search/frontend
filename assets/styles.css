@@ -58,6 +58,12 @@ body {
     white-space: normal;
 }
 
+.recapture-container {
+    padding: 20px;
+    padding-bottom: 0;
+    text-align: center;
+}
+
 .feedback-buttons {
     position: absolute;
     right: 10px;
@@ -198,4 +204,9 @@ a {
 /*Hide feedback buttons in ghost results*/
 .ghost-result .feedback-buttons {
   display: none;
+}
+
+#resultsInfo {
+    margin-bottom: 15px;
+    margin-top: -10px;
 }

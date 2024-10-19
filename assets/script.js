@@ -101,34 +101,64 @@ window.addEventListener('load', () => {
     }
 });
 
-function displayResults() {
+async function fetchRecaptures() {
+    const response = await fetch('assets/recaptures.json');
+    return response.json();
+}
+
+async function displayResults() {
     const start = (currentPage - 1) * itemsPerPage;
     const end = start + itemsPerPage;
     const paginatedResults = searchResults.slice(start, end);
 
     const resultsDiv = document.getElementById('results');
-    resultsDiv.innerHTML = paginatedResults.map(result => `
-                <div class="result-wrapper">
-                    <div class="result-container">
-                        <a href="${result.url}" target="_blank">
-                            ${result.favicon_id ? (result.favicon_type === 'svg' ?
-            `<object class="favicon" type="image/svg+xml" data="https://api.novasearch.xyz/favicon/${result.favicon_id}"></object>` :
-            `<img class="favicon" src="https://api.novasearch.xyz/favicon/${result.favicon_id}">`) : ''}
-                            ${result.title || "<i class='text-muted'>No title available</i>"}
-                        </a>
-                        <p class="text-muted small">${result.url}</p>
-                        <p class="description">${result.description || "<i class='text-muted'>We'd show you a description but sadly this site hasn't provided us with one :(</i>"}</p>
-                    </div>
-                    <div class="feedback-buttons">
-                        <button class="thumbs-up" data-url="${result.url}">
-                            <i class="fas fa-thumbs-up"></i>
-                        </button>
-                        <button class="thumbs-down" data-url="${result.url}">
-                            <i class="fas fa-thumbs-down"></i>
-                        </button>
-                    </div>
+    let resultsHTML = '';
+
+    // Fetch recaptures
+    const recaptures = await fetchRecaptures();
+
+    // Check if the search query matches any keywords
+    const query = document.getElementById('query').value.toLowerCase();
+    const matchingRecapture = recaptures.find(recapture =>
+        recapture.keywords.split(', ').some(keyword => keyword.toLowerCase() === query)
+    );
+
+    // If a match is found, prepend it to the results
+    if (matchingRecapture) {
+        resultsHTML += `
+            <div class="result-wrapper">
+                <div class="result-container recapture-container">
+                    <h3>${matchingRecapture.title}</h3>
+                    <p>${matchingRecapture.description}</p>
                 </div>
-            `).join('');
+            </div>
+        `;
+    }
+
+    resultsHTML += paginatedResults.map(result => `
+        <div class="result-wrapper">
+            <div class="result-container">
+                <a href="${result.url}" target="_blank">
+                    ${result.favicon_id ? (result.favicon_type === 'svg' ?
+        `<object class="favicon" type="image/svg+xml" data="https://api.novasearch.xyz/favicon/${result.favicon_id}"></object>` :
+        `<img class="favicon" src="https://api.novasearch.xyz/favicon/${result.favicon_id}">`) : ''}
+                    ${result.title || "<i class='text-muted'>No title available</i>"}
+                </a>
+                <p class="text-muted small">${result.url}</p>
+                <p class="description">${result.description || "<i class='text-muted'>We'd show you a description but sadly this site hasn't provided us with one :(</i>"}</p>
+            </div>
+            <div class="feedback-buttons">
+                <button class="thumbs-up" data-url="${result.url}">
+                    <i class="fas fa-thumbs-up"></i>
+                </button>
+                <button class="thumbs-down" data-url="${result.url}">
+                    <i class="fas fa-thumbs-down"></i>
+                </button>
+            </div>
+        </div>
+    `).join('');
+
+    resultsDiv.innerHTML = resultsHTML;
 
     setupFeedbackButtons();
 }

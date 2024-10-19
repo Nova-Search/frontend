@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "title": "No need to search for Google",
+        "description": "Nova Search gives you completely independent search results, all without tracking you or your data.",
+        "keywords": "google, google search, google.com"
+    },
+    {
+        "id": 2,
+        "title": "No need to search for Bing",
+        "description": "Nova Search gives you completely independent search results, all without tracking you or your data.",
+        "keywords": "bing, bing search, bing.com"
+    },
+    {
+        "id": 3,
+        "title": "You're already using Nova Search",
+        "description": "You're already using Nova Search, with completely independent search results and no tracking.",
+        "keywords": "nova, nova search, novasearch.xyz"
+    }
+]
