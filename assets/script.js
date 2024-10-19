@@ -68,7 +68,7 @@ searchForm.addEventListener('submit', async (e) => {
         if (data.detail === "No results found.") {
             searchResults = [];
             resultsInfoDiv.textContent = `0 results found in ${(Date.now() - startTime) / 1000}s.`;
-            resultsDiv.innerHTML = '<p>No results found.</p>';
+            resultsDiv.innerHTML = "<div class='result-wrapper'><div class='result-container information-container'><h2>No results</h2><p>Try searching for something less specific.</p></div></div>";
         } else {
             searchResults = Array.isArray(data) ? data : [];
             currentPage = 1;
