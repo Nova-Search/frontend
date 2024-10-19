@@ -58,9 +58,9 @@ body {
     white-space: normal;
 }
 
-.recapture-container {
+.information-container {
     padding: 20px;
-    padding-bottom: 0;
+    padding-bottom: 10px;
     text-align: center;
 }
 

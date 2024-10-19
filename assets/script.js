@@ -40,32 +40,51 @@ function createGhostResults(count) {
 
 searchForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    startTime = Date.now(); // Record start time
-    const query = document.getElementById('query').value;
-    resultsDiv.innerHTML = createGhostResults(itemsPerPage); // Show ghost results
+    startTime = Date.now();
+    const query = document.getElementById('query').value.trim();
+    resultsDiv.innerHTML = createGhostResults(itemsPerPage); 
     paginationUl.innerHTML = '';
-    resultsInfoDiv.innerHTML = ''; // Clear previous results info
+    resultsInfoDiv.innerHTML = ''; 
+
+    if (!query) {
+        resultsDiv.innerHTML = '<p>Please enter a search term.</p>';
+        return;
+    }
 
     try {
         const response = await fetch(`https://api.novasearch.xyz/search?query=${query}`);
 
         if (response.status === 429) {
-            resultsDiv.innerHTML = '<p>Too many requests. Please try again later.</p>';
+            resultsDiv.innerHTML = "<div class='result-wrapper'><div class='result-container information-container'><h2>Slow down!</h2><p>Our servers have automatically blocked you for sending too many requests to our servers. This may be caused by an automation tool, malware on your computer, a malicious device on your network, or spam refreshing the search page (please stop).</p></div></div>";
             return;
         }
 
-        searchResults = await response.json();
-        currentPage = 1;
-        displayResults();
-        setupPagination();
+        if (response.status === 500) {
+            resultsDiv.innerHTML = "<div class='result-wrapper'><div class='result-container information-container'><h2>Uh oh</h2><p>We're sorry, something went wrong with our server while searching for results, please try again later.</p></div></div>";
+            return;
+        }
 
-        const endTime = Date.now();
-        const elapsedTime = (endTime - startTime) / 1000; // Calculate elapsed time in seconds
-        resultsInfoDiv.textContent = `${searchResults.length} results found in ${elapsedTime.toFixed(2)} seconds.`;
+        const data = await response.json();
+        if (data.detail === "No results found.") {
+            searchResults = [];
+            resultsInfoDiv.textContent = `0 results found in ${(Date.now() - startTime) / 1000}s.`;
+            resultsDiv.innerHTML = '<p>No results found.</p>';
+        } else {
+            searchResults = Array.isArray(data) ? data : [];
+            currentPage = 1;
+            displayResults();
+            setupPagination();
 
+            const elapsedTime = (Date.now() - startTime) / 1000;
+            resultsInfoDiv.textContent = `${searchResults.length} results found in ${elapsedTime.toFixed(2)} seconds.`;
+        }
     } catch (error) {
-        resultsDiv.innerHTML = '<p>No results found.</p>';
-        resultsInfoDiv.innerHTML = ''; // Clear results info on error
+        if (!navigator.onLine) {
+            resultsDiv.innerHTML = "<div class='result-wrapper'><div class='result-container information-container'><h2>Offline</h2><p>It looks like you're offline. Please check your internet connection and try again.</p></div></div>";
+        } else {
+            resultsDiv.innerHTML = "<div class='result-wrapper'><div class='result-container information-container'><h2>Uh oh</h2><p>We're sorry, something went wrong while searching for results, please check your internet connection or try again later.</p></div></div>";
+        }
+        resultsInfoDiv.innerHTML = '';
     }
 });
 
@@ -109,26 +128,22 @@ async function fetchRecaptures() {
 async function displayResults() {
     const start = (currentPage - 1) * itemsPerPage;
     const end = start + itemsPerPage;
-    const paginatedResults = searchResults.slice(start, end);
+    const results = Array.isArray(searchResults) ? searchResults : [];
+    const paginatedResults = results.slice(start, end);
+    const query = document.getElementById('query').value.toLowerCase().trim();
 
-    const resultsDiv = document.getElementById('results');
-    let resultsHTML = '';
-
-    // Fetch recaptures
     const recaptures = await fetchRecaptures();
-
-    // Check if the search query matches any keywords
-    const query = document.getElementById('query').value.toLowerCase();
     const matchingRecapture = recaptures.find(recapture =>
-        recapture.keywords.split(', ').some(keyword => keyword.toLowerCase() === query)
+        recapture.keywords.split(', ').includes(query)
     );
 
-    // If a match is found, prepend it to the results
+    let resultsHTML = '';
+
     if (matchingRecapture) {
         resultsHTML += `
             <div class="result-wrapper">
-                <div class="result-container recapture-container">
-                    <h3>${matchingRecapture.title}</h3>
+                <div class="result-container information-container">
+                    <h2>${matchingRecapture.title}</h2>
                     <p>${matchingRecapture.description}</p>
                 </div>
             </div>
@@ -145,7 +160,7 @@ async function displayResults() {
                     ${result.title || "<i class='text-muted'>No title available</i>"}
                 </a>
                 <p class="text-muted small">${result.url}</p>
-                <p class="description">${result.description || "<i class='text-muted'>We'd show you a description but sadly this site hasn't provided us with one :(</i>"}</p>
+                <p class="description">${result.description || "<i class='text-muted'>Description not available.</i>"}</p>
             </div>
             <div class="feedback-buttons">
                 <button class="thumbs-up" data-url="${result.url}">
@@ -159,7 +174,6 @@ async function displayResults() {
     `).join('');
 
     resultsDiv.innerHTML = resultsHTML;
-
     setupFeedbackButtons();
 }
 
