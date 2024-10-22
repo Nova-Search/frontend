@@ -122,6 +122,13 @@ window.addEventListener('load', () => {
         displayUpdate();
         setCookie('hasSeenWelcomeMessage', 'true', 365);
     }
+
+    if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+        const icon = document.getElementById('icon');
+        if (icon) {
+            icon.style.fill = 'black';
+        }
+    }
 });
 
 async function fetchRecaptures() {
