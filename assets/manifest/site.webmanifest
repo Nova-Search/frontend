@@ -15,7 +15,22 @@
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#ffffff",
+  "theme_color": "#f75e86",
   "background_color": "#ffffff",
-  "display": "standalone"
+  "display": "standalone",
+  "id": "1",
+  "description": "Nova Search is an open-source search engine with completely independent search results - no third parties",
+  "start_url": "https://novasearch.xyz",
+  "dir": "ltr",
+  "lang": "en",
+  "scope": "https://novasearch.xyz",
+  "orientation": "any",
+  "display_override": [
+    "standalone",
+    "window-controls-overlay"
+  ],
+  "categories": [
+    "productivity",
+    "utilities"
+  ]
 }
