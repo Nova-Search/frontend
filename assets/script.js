@@ -290,3 +290,36 @@ function setupPagination() {
     paginationUl.innerHTML = '';
     paginationUl.appendChild(fragment);
 }
+
+function setPWAColor(color) {
+    if ('theme-color' in document.head.style) {
+        document.head.style.setProperty('theme-color', color);
+    } else {
+        const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+        if (metaThemeColor) {
+            metaThemeColor.setAttribute('content', color);
+        } else {
+            const meta = document.createElement('meta');
+            meta.name = 'theme-color';
+            meta.content = color;
+            document.head.appendChild(meta);
+        }
+    }
+}
+
+const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+if (prefersDarkScheme) {
+    setPWAColor('#252525');
+} else {
+    setPWAColor('#f8f9fa');
+}
+
+// Listen for changes in user's color scheme preference
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+    if (event.matches) {
+        setPWAColor('#252525');
+    } else {
+        setPWAColor('#f8f9fa');
+    }
+});
