@@ -126,7 +126,7 @@ window.addEventListener('load', () => {
     const icon = document.getElementById('icon');
     if (icon) {
         const updateIconColor = () => {
-            icon.style.fill = prefersDarkScheme.matches ? 'white' : 'black';
+            icon.setAttribute('fill', prefersDarkScheme.matches ? 'white' : 'black');
         };
 
         updateIconColor(); // Set initial color
