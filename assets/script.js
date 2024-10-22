@@ -312,4 +312,6 @@ function updatePWAColor() {
 prefersDarkScheme.addEventListener('change', updatePWAColor);
 window.addEventListener('load', updatePWAColor);
 
-updatePWAColor();
+window.addEventListener('load', () => {
+    setTimeout(updatePWAColor, 500);
+});
