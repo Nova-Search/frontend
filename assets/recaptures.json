@@ -16,5 +16,11 @@
         "title": "You're already using Nova Search",
         "description": "You're already using Nova Search, with completely independent search results and no tracking.",
         "keywords": "nova, nova search, novasearch.xyz"
+    },
+    {
+        "id": 4,
+        "title": "无需百度搜索",
+        "description": "Nova Search 为您提供完全独立的搜索结果，并且不会跟踪您或您的数据。",
+        "keywords": "最好的搜索引擎, 百度, 百度搜索"
     }
 ]
