@@ -292,34 +292,24 @@ function setupPagination() {
 }
 
 function setPWAColor(color) {
-    if ('theme-color' in document.head.style) {
-        document.head.style.setProperty('theme-color', color);
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', color);
     } else {
-        const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-        if (metaThemeColor) {
-            metaThemeColor.setAttribute('content', color);
-        } else {
-            const meta = document.createElement('meta');
-            meta.name = 'theme-color';
-            meta.content = color;
-            document.head.appendChild(meta);
-        }
+        const meta = document.createElement('meta');
+        meta.name = 'theme-color';
+        meta.content = color;
+        document.head.appendChild(meta);
     }
 }
 
-const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
 
-if (prefersDarkScheme) {
-    setPWAColor('#252525');
-} else {
-    setPWAColor('#f8f9fa');
+function updatePWAColor() {
+    setPWAColor(prefersDarkScheme.matches ? '#252525' : '#f8f9fa');
 }
 
-// Listen for changes in user's color scheme preference
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
-    if (event.matches) {
-        setPWAColor('#252525');
-    } else {
-        setPWAColor('#f8f9fa');
-    }
-});
+prefersDarkScheme.addEventListener('change', updatePWAColor);
+window.addEventListener('load', updatePWAColor);
+
+updatePWAColor();
