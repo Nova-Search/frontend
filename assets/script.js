@@ -114,6 +114,10 @@ function displayUpdate() {
 }
 
 window.addEventListener('load', () => {
+    if (!navigator.onLine) {
+        resultsDiv.innerHTML += "<div class='result-wrapper'><div class='result-container information-container'><h2>Offline</h2><p>It looks like you're offline. Please check your internet connection and try again.</p></div></div>"; 
+    } 
+
     if (!getCookie('hasSeenWelcomeMessage')) {
         displayUpdate();
         setCookie('hasSeenWelcomeMessage', 'true', 365);
