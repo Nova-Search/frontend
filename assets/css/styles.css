@@ -180,7 +180,7 @@ a {
 .search-button:hover {
     background: var(--search-button-colour);
     border-color: var(--search-button-colour);
-    color: var(--text-colour);
+    color: #ffffff;
 }
 
 .ghost-result {
