@@ -4,5 +4,11 @@
         "title": "Calculator",
         "src": "/apps/calc.html",
         "keywords": "calc, calculator"
+    },
+    {
+        "id": 2,
+        "title": "Dictionary",
+        "src": "/apps/dictionary.html",
+        "keywords": "define, spell"
     }
 ]

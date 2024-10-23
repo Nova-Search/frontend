@@ -42,9 +42,9 @@ searchForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     startTime = Date.now();
     const query = document.getElementById('query').value.trim();
-    resultsDiv.innerHTML = createGhostResults(itemsPerPage); 
+    resultsDiv.innerHTML = createGhostResults(itemsPerPage);
     paginationUl.innerHTML = '';
-    resultsInfoDiv.innerHTML = ''; 
+    resultsInfoDiv.innerHTML = '';
 
     if (!query) {
         resultsDiv.innerHTML = '<p>Please enter a search term.</p>';
@@ -68,7 +68,7 @@ searchForm.addEventListener('submit', async (e) => {
         if (data.detail === "No results found.") {
             searchResults = [];
             resultsInfoDiv.textContent = `0 results found in ${(Date.now() - startTime) / 1000}s.`;
-            resultsDiv.innerHTML = "<div class='result-wrapper'><div class='result-container information-container'><h2>No results</h2><p>Try searching for something less specific.</p></div></div>";
+            // No results from the API, but continue to check for recaptures/apps
         } else {
             searchResults = Array.isArray(data) ? data : [];
             currentPage = 1;
@@ -85,7 +85,11 @@ searchForm.addEventListener('submit', async (e) => {
             resultsDiv.innerHTML = "<div class='result-wrapper'><div class='result-container information-container'><h2>Uh oh</h2><p>We're sorry, something went wrong while searching for results, please check your internet connection or try again later.</p></div></div>";
         }
         resultsInfoDiv.innerHTML = '';
+        return; // Exit the function to prevent further execution
     }
+
+    // Continue to check for recaptures/apps even if API returned no results
+    displayResults(); 
 });
 
 function getCookie(name) {
@@ -115,8 +119,8 @@ function displayUpdate() {
 
 window.addEventListener('load', () => {
     if (!navigator.onLine) {
-        resultsDiv.innerHTML += "<div class='result-wrapper'><div class='result-container information-container'><h2>Offline</h2><p>It looks like you're offline. Please check your internet connection and try again.</p></div></div>"; 
-    } 
+        resultsDiv.innerHTML += "<div class='result-wrapper'><div class='result-container information-container'><h2>Offline</h2><p>It looks like you're offline. Please check your internet connection and try again.</p></div></div>";
+    }
 
     if (!getCookie('hasSeenWelcomeMessage')) {
         displayUpdate();
@@ -157,7 +161,7 @@ async function displayResults() {
         recapture.keywords.split(', ').includes(query)
     );
     const matchingApp = apps.find(app =>
-        app.keywords.split(', ').includes(query)
+        app.keywords.split(', ').some(keyword => query.includes(keyword))
     );
 
     let resultsHTML = '';
@@ -173,10 +177,11 @@ async function displayResults() {
         `;
     }
     if (matchingApp) {
+        const queryWithoutFirstWord = query.split(' ').slice(1).join(' ');
         resultsHTML += `
             <div class="result-wrapper">
                 <div class="app">
-                    <iframe src="${matchingApp.src}" width="100%" height="355px;" frameborder="0"></iframe>
+                    <iframe src="${matchingApp.src}?query=${encodeURIComponent(queryWithoutFirstWord)}" width="100%" height="355px;" frameborder="0"></iframe>
                 </div>
             </div>
         `;
@@ -187,8 +192,8 @@ async function displayResults() {
             <div class="result-container">
                 <a href="${result.url}" target="_blank">
                     ${result.favicon_id ? (result.favicon_type === 'svg' ?
-        `<object class="favicon" type="image/svg+xml" data="https://api.novasearch.xyz/favicon/${result.favicon_id}"></object>` :
-        `<img class="favicon" src="https://api.novasearch.xyz/favicon/${result.favicon_id}">`) : ''}
+                        `<object class="favicon" type="image/svg+xml" data="https://api.novasearch.xyz/favicon/${result.favicon_id}"></object>` :
+                        `<img class="favicon" src="https://api.novasearch.xyz/favicon/${result.favicon_id}">`) : ''}
                     ${result.title || "<i class='text-muted'>No title available</i>"}
                 </a>
                 <p class="text-muted small">${result.url}</p>
@@ -204,6 +209,11 @@ async function displayResults() {
             </div>
         </div>
     `).join('');
+
+    // Show "No results" message if there are no results of any kind
+    if (resultsHTML === "" && !matchingRecapture && !matchingApp) {
+        resultsHTML = "<div class='result-wrapper'><div class='result-container information-container'><h2>No results</h2><p>Try searching for something less specific.</p></div></div>";
+    }
 
     resultsDiv.innerHTML = resultsHTML;
     setupFeedbackButtons();

@@ -67,11 +67,11 @@ body {
 .app {
     padding: 0px;
     padding-bottom: 0px;
-    text-align: center;
+    text-align: left;
     flex: 1;
     background: var(--bg-colour);
-    border: 0px solid var(--border-colour);
-    border-radius: 0px;
+    border: 1px solid var(--border-colour);
+    border-radius: 7px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
