@@ -139,6 +139,11 @@ async function fetchRecaptures() {
     return response.json();
 }
 
+async function fetchApps() {
+    const response = await fetch('/apps/apps.json');
+    return response.json();
+}
+
 async function displayResults() {
     const start = (currentPage - 1) * itemsPerPage;
     const end = start + itemsPerPage;
@@ -147,8 +152,12 @@ async function displayResults() {
     const query = document.getElementById('query').value.toLowerCase().trim();
 
     const recaptures = await fetchRecaptures();
+    const apps = await fetchApps();
     const matchingRecapture = recaptures.find(recapture =>
         recapture.keywords.split(', ').includes(query)
+    );
+    const matchingApp = apps.find(app =>
+        app.keywords.split(', ').includes(query)
     );
 
     let resultsHTML = '';
@@ -159,6 +168,15 @@ async function displayResults() {
                 <div class="result-container information-container">
                     <h2>${matchingRecapture.title}</h2>
                     <p>${matchingRecapture.description}</p>
+                </div>
+            </div>
+        `;
+    }
+    if (matchingApp) {
+        resultsHTML += `
+            <div class="result-wrapper">
+                <div class="app">
+                    <iframe src="${matchingApp.src}" width="100%" height="355px;" frameborder="0"></iframe>
                 </div>
             </div>
         `;

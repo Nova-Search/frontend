@@ -64,6 +64,19 @@ body {
     text-align: center;
 }
 
+.app {
+    padding: 0px;
+    padding-bottom: 0px;
+    text-align: center;
+    flex: 1;
+    background: var(--bg-colour);
+    border: 0px solid var(--border-colour);
+    border-radius: 0px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
 .feedback-buttons {
     position: absolute;
     right: 10px;
