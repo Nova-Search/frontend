@@ -85,6 +85,9 @@
 
             try {
                 const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+                if (response.status === 429) {
+                    throw new Error('Too Many Requests');
+                }
                 if (!response.ok) {
                     throw new Error('Word not found');
                 }
@@ -131,7 +134,11 @@
                 html += `</div>`;
                 contentDiv.innerHTML = html;
             } catch (error) {
-                contentDiv.innerHTML = '<div class="display text-danger">No definitions found for this word.</div>';
+                if (error.message === 'Too Many Requests') {
+                    contentDiv.innerHTML = '<div class="display text-danger">Too many requests. Please try again later (why are you looking up the definition of over 450 words in a 5 minute time window?)</div>';
+                } else {
+                    contentDiv.innerHTML = '<div class="display text-danger">No definitions found for this word.</div>';
+                }
             }
         }
 
