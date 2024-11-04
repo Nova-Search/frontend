@@ -223,3 +223,82 @@ a {
     margin-bottom: 15px;
     margin-top: -10px;
 }
+
+.search-container {
+    transition: all 0.3s ease;
+    margin: 15vh auto 2rem;
+    max-width: 500px;
+}
+
+.search-container.searched {
+    margin: 1rem auto;
+    max-width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 20px;
+}
+
+.search-container .logo {
+    transition: all 0.3s ease;
+    width: 48px;
+    height: 48px;
+    margin: 1rem auto;
+    display: block;
+}
+
+.search-container.searched .logo {
+    width: 32px;
+    height: 32px;
+    margin: 0 15px 0 0;
+}
+
+.search-form {
+    transition: all 0.3s ease;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.search-container.searched .search-form {
+    max-width: 400px;
+    margin: 0;
+}
+
+#resultsInfo {
+    margin-left: auto;
+    padding: 0 15px;
+}
+
+.form-control {
+    max-width: 100%;
+    width: 100%;
+}
+
+#rightPanel {
+    margin-top: 30px;
+}
+
+@media (max-width: 767px) {
+    /* 767px is Bootstrap's md breakpoint */
+    .row {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    /* Move right panel to top */
+    .col-md-6:last-child {
+        order: -1;
+    }
+    
+    /* Reduce margin between panels */
+    #rightPanel {
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+    
+    /* Adjust padding for better mobile spacing */
+    .col-md-6 {
+        padding: 10px !important;
+    }
+}

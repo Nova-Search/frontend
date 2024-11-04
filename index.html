@@ -4,40 +4,61 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Nova</title>
-  <meta name="description" content="Nova Search is an open-source search engine with completely independent search results - no third parties">
-  <meta name="keywords" content="search, engine, open-source, independent, no third parties, privacy, google, bing, yandex, yahoo, mojeek, duckduckgo">
+  <meta name="description"
+    content="Nova Search is an open-source search engine with completely independent search results - no third parties">
+  <meta name="keywords"
+    content="search, engine, open-source, independent, no third parties, privacy, google, bing, yandex, yahoo, mojeek, duckduckgo">
 
   <link href="assets/css/bootstrap.min.css" rel="stylesheet">
   <link href="assets/css/styles.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-  <link rel="icon" type="image/png" href="/assets/manifest/favicon-48x48.png" sizes="48x48" />
-  <link rel="icon" type="image/svg+xml" href="/assets/manifest/favicon.svg" />
-  <link rel="shortcut icon" href="/assets/manifest/favicon.ico" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/assets/manifest/apple-touch-icon.png" />
-  <meta name="apple-mobile-web-app-title" content="Nova" />
-  <script>navigator.serviceWorker.register("assets/manifest/service-worker.js")</script> 
-  <link rel="manifest" href="/assets/manifest/site.webmanifest" />
+  <link rel="icon" type="image/png" href="/assets/manifest/favicon-48x48.png" sizes="48x48">
+  <link rel="icon" type="image/svg+xml" href="/assets/manifest/favicon.svg">
+  <link rel="shortcut icon" href="/assets/manifest/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/manifest/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-title" content="Nova">
+  <link rel="manifest" href="/assets/manifest/site.webmanifest">
 </head>
 
 <body>
-  <div class="container mt-4 text-start">
-    <svg style="max-width: 48px; display: block; margin: 0 auto;" id="icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" clip-rule="evenodd" fill-rule="evenodd" preserveAspectRatio="xMidYMid meet" stroke-linejoin="round" stroke-miterlimit="2" version="1.0" viewBox="-0.0 -0.0 134.0 134.1" zoomAndPan="magnify" style="fill: rgb(255, 255, 255);" original_string_length="884" width="134px" height="134px"><g id="__id7_sl0kib7sj"><path d="M86.143,98.06l32.845,32.834c3.252,3.251 8.533,3.25 11.785,-0.002c3.251,-3.253 3.25,-8.534 -0.002,-11.786l-32.823,-32.811c6.603,-8.981 10.506,-20.072 10.506,-32.068c0,-29.929 -24.298,-54.227 -54.227,-54.227c-29.929,-0 -54.227,24.298 -54.227,54.227c-0,29.929 24.298,54.227 54.227,54.227c11.927,0 22.959,-3.858 31.916,-10.394Zm-31.916,-81.393c20.73,-0 37.561,16.83 37.561,37.56c-0,20.73 -16.831,37.561 -37.561,37.561c-20.73,-0 -37.56,-16.831 -37.56,-37.561c-0,-20.73 16.83,-37.56 37.56,-37.56Z" style="fill: inherit;"></path></g></svg>
-    <form id="searchForm" class="d-flex my-4 align-items-start">
-      <!-- <h1 class="me-3 mb-0"></h1> -->
-      <input class="form-control me-2" type="search" id="query" placeholder="Search Nova..." required>
-      <button class="btn btn-primary search-button" type="submit">Search</button>
-    </form>
-    <div id="resultsInfo"></div>
+  <div class="container-fluid">
+    <!-- Main Search Section -->
+    <div class="search-container text-center" id="searchContainer">
+      <a href="javascript:void(0)" id="logoLink">
+        <svg class="logo" id="icon" xmlns="http://www.w3.org/2000/svg" viewBox="-0.0 -0.0 134.0 134.1">
+          <path
+            d="M86.143,98.06l32.845,32.834c3.252,3.251 8.533,3.25 11.785,-0.002c3.251,-3.253 3.25,-8.534 -0.002,-11.786l-32.823,-32.811c6.603,-8.981 10.506,-20.072 10.506,-32.068c0,-29.929 -24.298,-54.227 -54.227,-54.227c-29.929,-0 -54.227,24.298 -54.227,54.227c-0,29.929 24.298,54.227 54.227,54.227c11.927,0 22.959,-3.858 31.916,-10.394Zm-31.916,-81.393c20.73,-0 37.561,16.83 37.561,37.56c-0,20.73 -16.831,37.561 -37.561,37.561c-20.73,-0 -37.56,-16.831 -37.56,-37.561c-0,-20.73 16.83,-37.56 37.56,-37.56Z" />
+        </svg>
+      </a>
 
-    <div id="results" class="list-group"></div>
-    <nav>
-      <ul id="pagination" class="pagination"></ul>
-    </nav>
+      <form id="searchForm" class="search-form d-flex my-4">
+        <input class="form-control me-2" type="search" id="query" placeholder="Search Nova..." required>
+        <button class="btn btn-primary search-button" type="submit">Search</button>
+      </form>
+
+      <div id="resultsInfo"></div>
+    </div>
+
+    <!-- Results and Panels Section -->
+    <div class="row">
+      <div class="col-md-6 p-4">
+        <div id="results" class="list-group"></div>
+        <nav>
+          <ul id="pagination" class="pagination justify-content-center mt-4"></ul>
+        </nav>
+      </div>
+      <div class="col-md-6 p-4">
+        <div id="rightPanel" class="panel"></div>
+      </div>
+    </div>
   </div>
+
+  <script src="assets/script.js"></script>
+  <script>
+    navigator.serviceWorker.register("assets/manifest/service-worker.js");
+  </script>
 </body>
-<script src="assets/script.js"></script>
 
 </html>

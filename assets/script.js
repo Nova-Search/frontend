@@ -42,6 +42,16 @@ searchForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     startTime = Date.now();
     const query = document.getElementById('query').value.trim();
+    
+    // Update URL with search query without page refresh
+    const newUrl = new URL(window.location);
+    if (query) {
+        newUrl.searchParams.set('q', query);
+    } else {
+        newUrl.searchParams.delete('q');
+    }
+    history.pushState({}, '', newUrl);
+
     resultsDiv.innerHTML = createGhostResults(itemsPerPage);
     paginationUl.innerHTML = '';
     resultsInfoDiv.innerHTML = '';
@@ -50,6 +60,8 @@ searchForm.addEventListener('submit', async (e) => {
         resultsDiv.innerHTML = '<p>Please enter a search term.</p>';
         return;
     }
+
+    document.getElementById('searchContainer').classList.add('searched');
 
     try {
         const response = await fetch(`https://api.novasearch.xyz/search?query=${query}`);
@@ -154,7 +166,6 @@ async function displayResults() {
     const results = Array.isArray(searchResults) ? searchResults : [];
     const paginatedResults = results.slice(start, end);
     const query = document.getElementById('query').value.toLowerCase().trim();
-
     const recaptures = await fetchRecaptures();
     const apps = await fetchApps();
     const matchingRecapture = recaptures.find(recapture =>
@@ -164,10 +175,10 @@ async function displayResults() {
         app.keywords.split(', ').some(keyword => query.includes(keyword))
     );
 
-    let resultsHTML = '';
-
+    // Right panel content (always show if matches exist)
+    let rightPanelHTML = '';
     if (matchingRecapture) {
-        resultsHTML += `
+        rightPanelHTML += `
             <div class="result-wrapper">
                 <div class="result-container information-container">
                     <h2>${matchingRecapture.title}</h2>
@@ -177,44 +188,45 @@ async function displayResults() {
         `;
     }
     if (matchingApp) {
-        const queryWithoutFirstWord = query.split(' ').slice(1).join(' ');
-        resultsHTML += `
+        rightPanelHTML += `
             <div class="result-wrapper">
                 <div class="app">
-                    <iframe src="${matchingApp.src}?query=${encodeURIComponent(queryWithoutFirstWord)}" width="100%" height="355px;" frameborder="0"></iframe>
+                    <iframe src="${matchingApp.src}?query=${encodeURIComponent(query.split(' ').slice(1).join(' '))}" width="100%" height="355px;" frameborder="0"></iframe>
                 </div>
             </div>
         `;
     }
+    document.getElementById('rightPanel').innerHTML = rightPanelHTML;
 
-    resultsHTML += paginatedResults.map(result => `
-        <div class="result-wrapper">
-            <div class="result-container">
-                <a href="${result.url}" target="_blank">
-                    ${result.favicon_id ? (result.favicon_type === 'svg' ?
-                        `<object class="favicon" type="image/svg+xml" data="https://api.novasearch.xyz/favicon/${result.favicon_id}"></object>` :
-                        `<img class="favicon" src="https://api.novasearch.xyz/favicon/${result.favicon_id}">`) : ''}
-                    ${result.title || "<i class='text-muted'>No title available</i>"}
-                </a>
-                <p class="text-muted small">${result.url}</p>
-                <p class="description">${result.description || "<i class='text-muted'>Description not available.</i>"}</p>
+    // Main results
+    let resultsHTML = '';
+    if (paginatedResults.length > 0) {
+        resultsHTML = paginatedResults.map(result => `
+            <div class="result-wrapper">
+                <div class="result-container">
+                    <a href="${result.url}" target="_blank">
+                        ${result.favicon_id ? (result.favicon_type === 'svg' ?
+                            `<object class="favicon" type="image/svg+xml" data="https://api.novasearch.xyz/favicon/${result.favicon_id}"></object>` :
+                            `<img class="favicon" src="https://api.novasearch.xyz/favicon/${result.favicon_id}">`) : ''}
+                        ${result.title || "<i class='text-muted'>No title available</i>"}
+                    </a>
+                    <p class="text-muted small">${result.url}</p>
+                    <p class="description">${result.description || "<i class='text-muted'>Description not available.</i>"}</p>
+                </div>
+                <div class="feedback-buttons">
+                    <button class="thumbs-up" data-url="${result.url}">
+                        <i class="fas fa-thumbs-up"></i>
+                    </button>
+                    <button class="thumbs-down" data-url="${result.url}">
+                        <i class="fas fa-thumbs-down"></i>
+                    </button>
+                </div>
             </div>
-            <div class="feedback-buttons">
-                <button class="thumbs-up" data-url="${result.url}">
-                    <i class="fas fa-thumbs-up"></i>
-                </button>
-                <button class="thumbs-down" data-url="${result.url}">
-                    <i class="fas fa-thumbs-down"></i>
-                </button>
-            </div>
-        </div>
-    `).join('');
-
-    // Show "No results" message if there are no results of any kind
-    if (resultsHTML === "" && !matchingRecapture && !matchingApp) {
+        `).join('');
+    } else {
         resultsHTML = "<div class='result-wrapper'><div class='result-container information-container'><h2>No results</h2><p>Try searching for something less specific.</p></div></div>";
     }
-
+    
     resultsDiv.innerHTML = resultsHTML;
     setupFeedbackButtons();
 }
@@ -352,4 +364,70 @@ window.addEventListener('load', updatePWAColor);
 
 window.addEventListener('load', () => {
     setTimeout(updatePWAColor, 500);
+});
+
+// Add to window load event
+window.addEventListener('load', () => {
+    // Remove 'searched' class if no search query
+    if (!document.getElementById('query').value) {
+        document.getElementById('searchContainer').classList.remove('searched');
+    }
+});
+
+document.getElementById('logoLink').addEventListener('click', function (e) {
+    e.preventDefault();
+
+    // Clear the search input but keep the search bar visible
+    const searchInput = document.getElementById('query');
+    if (searchInput) {
+        searchInput.value = '';
+    }
+
+    // Remove the search parameter from URL
+    const newUrl = new URL(window.location);
+    newUrl.searchParams.delete('q');
+    history.pushState({}, '', newUrl);
+
+    // Remove the 'searched' class to reverse the animation
+    const searchContainer = document.getElementById('searchContainer');
+    if (searchContainer) {
+        searchContainer.classList.remove('searched');
+        // Clear resultsInfo content
+        const resultsInfoInContainer = searchContainer.querySelector('#resultsInfo');
+        if (resultsInfoInContainer) {
+            resultsInfoInContainer.textContent = '';
+            resultsInfoInContainer.innerHTML = '';
+        }
+    }
+
+    // Clear resultsInfo content using multiple methods
+    const resultsInfo = document.getElementById('resultsInfo');
+    if (resultsInfo) {
+        resultsInfo.textContent = '';
+        resultsInfo.innerHTML = '';
+    }
+
+    // Clear main content area
+    const mainContent = document.querySelector('.container-fluid');
+    if (mainContent) {
+        const resultsElements = mainContent.querySelectorAll('#resultsInfo');
+        resultsElements.forEach(el => {
+            el.textContent = '';
+            el.innerHTML = '';
+        });
+    }
+
+    // Clear other result elements
+    ['results', 'pagination', 'rightPanel'].forEach(elementId => {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.innerHTML = '';
+        }
+    });
+
+    // Ensure search form stays visible and centered
+    const searchForm = document.getElementById('searchForm');
+    if (searchForm) {
+        searchForm.style.display = 'flex';
+    }
 });
