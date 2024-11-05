@@ -201,28 +201,32 @@ async function displayResults() {
     // Main results
     let resultsHTML = '';
     if (paginatedResults.length > 0) {
-        resultsHTML = paginatedResults.map(result => `
-            <div class="result-wrapper">
-                <div class="result-container">
-                    <a href="${result.url}" target="_blank">
-                        ${result.favicon_id ? (result.favicon_type === 'svg' ?
-                            `<object class="favicon" type="image/svg+xml" data="https://api.novasearch.xyz/favicon/${result.favicon_id}"></object>` :
-                            `<img class="favicon" src="https://api.novasearch.xyz/favicon/${result.favicon_id}">`) : ''}
-                        ${result.title || "<i class='text-muted'>No title available</i>"}
-                    </a>
-                    <p class="text-muted small">${result.url}</p>
-                    <p class="description">${result.description || "<i class='text-muted'>Description not available.</i>"}</p>
+        resultsHTML = paginatedResults.map(result => {
+            const description = result.description || "<i class='text-muted'>Description not available.</i>";
+            const truncatedDescription = description.length > 180 ? description.substring(0, 180) + '...' : description;
+            return `
+                <div class="result-wrapper">
+                    <div class="result-container">
+                        <a href="${result.url}" target="_blank">
+                            ${result.favicon_id ? (result.favicon_type === 'svg' ?
+                                `<object class="favicon" type="image/svg+xml" data="https://api.novasearch.xyz/favicon/${result.favicon_id}"></object>` :
+                                `<img class="favicon" src="https://api.novasearch.xyz/favicon/${result.favicon_id}">`) : ''}
+                            ${result.title || "<i class='text-muted'>No title available</i>"}
+                        </a>
+                        <p class="text-muted small">${result.url}</p>
+                        <p class="description">${truncatedDescription}</p>
+                    </div>
+                    <div class="feedback-buttons">
+                        <button class="thumbs-up" data-url="${result.url}">
+                            <i class="fas fa-thumbs-up"></i>
+                        </button>
+                        <button class="thumbs-down" data-url="${result.url}">
+                            <i class="fas fa-thumbs-down"></i>
+                        </button>
+                    </div>
                 </div>
-                <div class="feedback-buttons">
-                    <button class="thumbs-up" data-url="${result.url}">
-                        <i class="fas fa-thumbs-up"></i>
-                    </button>
-                    <button class="thumbs-down" data-url="${result.url}">
-                        <i class="fas fa-thumbs-down"></i>
-                    </button>
-                </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
     } else {
         resultsHTML = "<div class='result-wrapper'><div class='result-container information-container'><h2>No results</h2><p>Try searching for something less specific.</p></div></div>";
     }
