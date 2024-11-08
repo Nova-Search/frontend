@@ -359,3 +359,36 @@ a {
     flex-direction: column;
     justify-content: center;
 }
+
+.settings-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+  }
+  
+  #settingsBtn {
+    padding: 8px 12px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+  }
+  
+  #settingsBtn:hover {
+    background-color: #e9ecef;
+  }
+
+[data-bs-theme="dark"] {
+    background-color: #212529;
+    color: #fff;
+}
+
+.card {
+    margin-bottom: 20px;
+    background-color: var(--bg-colour);
+    color: var(--text-colour);
+    border-color: var(--border-colour);
+}
