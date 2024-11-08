@@ -37,7 +37,6 @@ function createGhostResults(count) {
     return ghostHTML;
 }
 
-
 searchForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     startTime = Date.now();
@@ -64,7 +63,7 @@ searchForm.addEventListener('submit', async (e) => {
     document.getElementById('searchContainer').classList.add('searched');
 
     try {
-        const response = await fetch(`https://api.novasearch.xyz/search?query=${query}`);
+        const response = await fetch(`https://api.novasearch.xyz/search?query=${query}&page=${currentPage}&page_size=${itemsPerPage}`);
 
         if (response.status === 429) {
             resultsDiv.innerHTML = "<div class='result-wrapper'><div class='result-container information-container'><h2>Slow down!</h2><p>Our servers have automatically blocked you for sending too many requests to our servers. This may be caused by an automation tool, malware on your computer, a malicious device on your network, or spam refreshing the search page (please stop).</p></div></div>";
@@ -77,18 +76,19 @@ searchForm.addEventListener('submit', async (e) => {
         }
 
         const data = await response.json();
-        if (data.detail === "No results found.") {
+        if (data.results && data.results.length === 0) {
             searchResults = [];
             resultsInfoDiv.textContent = `0 results found in ${(Date.now() - startTime) / 1000}s.`;
-            // No results from the API, but continue to check for recaptures/apps
         } else {
-            searchResults = Array.isArray(data) ? data : [];
-            currentPage = 1;
+            searchResults = data.results || [];
+            currentPage = data.current_page || 1;
+            const totalResults = data.total_results || 0;
+            const totalPages = data.total_pages || 1;
             displayResults();
-            setupPagination();
+            setupPagination(totalPages);
 
             const elapsedTime = (Date.now() - startTime) / 1000;
-            resultsInfoDiv.textContent = `${searchResults.length} results found in ${elapsedTime.toFixed(2)} seconds.`;
+            resultsInfoDiv.textContent = `${totalResults} results found in ${elapsedTime.toFixed(2)} seconds.`;
         }
     } catch (error) {
         if (!navigator.onLine) {
@@ -159,10 +159,7 @@ async function fetchApps() {
 }
 
 async function displayResults() {
-    const start = (currentPage - 1) * itemsPerPage;
-    const end = start + itemsPerPage;
     const results = Array.isArray(searchResults) ? searchResults : [];
-    const paginatedResults = results.slice(start, end);
     const query = document.getElementById('query').value.toLowerCase().trim();
     const recaptures = await fetchRecaptures();
     const apps = await fetchApps();
@@ -198,8 +195,8 @@ async function displayResults() {
 
     // Main results
     let resultsHTML = '';
-    if (paginatedResults.length > 0) {
-        resultsHTML = paginatedResults.map(result => {
+    if (results.length > 0) {
+        resultsHTML = results.map(result => {
             const description = result.description || "<i class='text-muted'>Description not available.</i>";
             const truncatedDescription = description.length > 180 ? description.substring(0, 180) + '...' : description;
             return `
@@ -265,12 +262,12 @@ function setupFeedbackButtons() {
     });
 }
 
-function setupPagination() {
-    const pageCount = Math.ceil(searchResults.length / itemsPerPage);
+function setupPagination(totalPages) {
+    const pageCount = totalPages - 1;
     const screenWidth = window.innerWidth;
     let maxPagesToShow = Math.floor(screenWidth / 50); // Assuming each page item takes ~50px
     maxPagesToShow = Math.max(3, maxPagesToShow); // Ensure at least 3 pages are shown
-    maxPagesToShow = Math.min(10, maxPagesToShow); // Ensure no more than 10 pages are shown
+    maxPagesToShow = Math.min(8, maxPagesToShow); // Ensure no more than 10 pages are shown
 
     let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
     let endPage = Math.min(pageCount, startPage + maxPagesToShow - 1);
@@ -289,8 +286,7 @@ function setupPagination() {
         li.addEventListener('click', (e) => {
             e.preventDefault();
             currentPage = page;
-            displayResults();
-            setupPagination();
+            searchForm.dispatchEvent(new Event('submit')); // Trigger a new search request with the selected page number
         });
         return li;
     };
