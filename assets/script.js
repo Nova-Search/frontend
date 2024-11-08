@@ -118,14 +118,12 @@ function setCookie(name, value, days) {
 }
 
 function displayUpdate() {
-    const resultsDiv = document.getElementById('results');
-    resultsDiv.innerHTML = `
-        <div class="result-wrapper">
+    const resultsDiv = document.getElementById('container-fluid');
+    resultsDiv.innerHTML += `
             <div class="result-container">
-                <h1 style="text-align: center;">Welcome to Nova Search!</h1>
-                <p style="text-align: center;">Thank you for trying out Nova! We're a completely independent (and currently in beta) search engine and always improving. If you'd like, you can check out our source code on <a href="https://github.com/Nova-Search" target="_blank">GitHub</a>. This message will disappear next time you come here.</p>
+                <h1 style="text-align: center; font-size: 30px;">Got time to give us feedback?</h1>
+                <p style="text-align: center;">We'd love to hear what you have to say about Nova Search. If you've got a few minutes, please take the time to fill out <a href='https://forms.gle/znfiSbfnKNSf1DQu7'>this form</a>!</p>
             </div>
-        </div>
     `;
 }
 
@@ -134,9 +132,9 @@ window.addEventListener('load', () => {
         resultsDiv.innerHTML += "<div class='result-wrapper'><div class='result-container information-container'><h2>Offline</h2><p>It looks like you're offline. Please check your internet connection and try again.</p></div></div>";
     }
 
-    if (!getCookie('hasSeenWelcomeMessage')) {
+    if (!getCookie('hasSeenFeedbackForm')) {
         displayUpdate();
-        setCookie('hasSeenWelcomeMessage', 'true', 365);
+        setCookie('hasSeenFeedbackForm', 'true', 365);
     }
 
     const icon = document.getElementById('icon');
