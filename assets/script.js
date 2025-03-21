@@ -37,10 +37,15 @@ function createGhostResults(count) {
     return ghostHTML;
 }
 
+// Update the search form event listener
 searchForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     startTime = Date.now();
     const query = document.getElementById('query').value.trim();
+    
+    // Add the searching animation to the logo
+    const icon = document.getElementById('icon');
+    if (icon) icon.classList.add('searching');
     
     // Update URL with search query without page refresh
     const newUrl = new URL(window.location);
@@ -57,6 +62,8 @@ searchForm.addEventListener('submit', async (e) => {
 
     if (!query) {
         resultsDiv.innerHTML = '<p>Please enter a search term.</p>';
+        // Remove searching animation if no query
+        if (icon) icon.classList.remove('searching');
         return;
     }
 
@@ -67,11 +74,15 @@ searchForm.addEventListener('submit', async (e) => {
 
         if (response.status === 429) {
             resultsDiv.innerHTML = "<div class='result-wrapper'><div class='result-container information-container'><h2>Slow down!</h2><p>Our servers have automatically blocked you for sending too many requests to our servers. This may be caused by an automation tool, malware on your computer, a malicious device on your network, or spam refreshing the search page (please stop).</p></div></div>";
+            // After results are processed, remove the searching class
+            if (icon) icon.classList.remove('searching');
             return;
         }
 
         if (response.status === 500) {
             resultsDiv.innerHTML = "<div class='result-wrapper'><div class='result-container information-container'><h2>Uh oh</h2><p>We're sorry, something went wrong with our server while searching for results, please try again later.</p></div></div>";
+            // After results are processed, remove the searching class
+            if (icon) icon.classList.remove('searching');
             return;
         }
 
@@ -90,6 +101,8 @@ searchForm.addEventListener('submit', async (e) => {
             const elapsedTime = (Date.now() - startTime) / 1000;
             resultsInfoDiv.textContent = `${totalResults} results found in ${elapsedTime.toFixed(2)} seconds.`;
         }
+        // After results are processed, remove the searching class
+        if (icon) icon.classList.remove('searching');
     } catch (error) {
         if (!navigator.onLine) {
             resultsDiv.innerHTML = "<div class='result-wrapper'><div class='result-container information-container'><h2>Offline</h2><p>It looks like you're offline. Please check your internet connection and try again.</p></div></div>";
@@ -97,6 +110,8 @@ searchForm.addEventListener('submit', async (e) => {
             resultsDiv.innerHTML = "<div class='result-wrapper'><div class='result-container information-container'><h2>Uh oh</h2><p>We're sorry, something went wrong while searching for results, please check your internet connection or try again later.</p></div></div>";
         }
         resultsInfoDiv.innerHTML = '';
+        // Also remove searching animation on error
+        if (icon) icon.classList.remove('searching');
         return; // Exit the function to prevent further execution
     }
 
@@ -428,4 +443,36 @@ document.getElementById('logoLink').addEventListener('click', function (e) {
     if (searchForm) {
         searchForm.style.display = 'flex';
     }
+});
+
+// Scroll reveal functionality
+document.addEventListener('DOMContentLoaded', function() {
+  // Add reveal classes to elements
+  const sections = document.querySelectorAll('section');
+  sections.forEach(section => section.classList.add('reveal'));
+  
+  // Add delay classes to feature items
+  const features = document.querySelectorAll('.col-md-6');
+  features.forEach((feature, index) => {
+    feature.classList.add('reveal');
+    feature.classList.add(`reveal-delay-${index % 4 + 1}`);
+  });
+  
+  // Reveal elements when scrolled into view
+  function revealOnScroll() {
+    const reveals = document.querySelectorAll('.reveal');
+    reveals.forEach(item => {
+      const windowHeight = window.innerHeight;
+      const elementTop = item.getBoundingClientRect().top;
+      const elementVisible = 150;
+      
+      if (elementTop < windowHeight - elementVisible) {
+        item.classList.add('active');
+      }
+    });
+  }
+  
+  window.addEventListener('scroll', revealOnScroll);
+  // Trigger once on load
+  revealOnScroll();
 });
