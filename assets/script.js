@@ -70,7 +70,7 @@ searchForm.addEventListener('submit', async (e) => {
     document.getElementById('searchContainer').classList.add('searched');
 
     try {
-        const response = await fetch(`http://127.0.0.1:8000/search?query=${query}&page=${currentPage}&page_size=${itemsPerPage}`);
+        const response = await fetch(`https://api.novasearch.xyz/search?query=${query}&page=${currentPage}&page_size=${itemsPerPage}`);
 
         if (response.status === 429) {
             resultsDiv.innerHTML = "<div class='result-wrapper'><div class='result-container information-container'><h2>Slow down!</h2><p>Our servers have automatically blocked you for sending too many requests to our servers. This may be caused by an automation tool, malware on your computer, a malicious device on your network, or spam refreshing the search page (please stop).</p></div></div>";
@@ -219,8 +219,8 @@ async function displayResults() {
                     <div class="result-container">
                         <a href="${result.url}" target="_blank">
                             ${result.favicon_id ? (result.favicon_type === 'svg' ?
-                                `<object class="favicon" type="image/svg+xml" data="http://127.0.0.1:8000/favicon/${result.favicon_id}"></object>` :
-                                `<img class="favicon" src="http://127.0.0.1:8000/favicon/${result.favicon_id}">`) : ''}
+                                `<object class="favicon" type="image/svg+xml" data="https://api.novasearch.xyz/favicon/${result.favicon_id}"></object>` :
+                                `<img class="favicon" src="https://api.novasearch.xyz/favicon/${result.favicon_id}">`) : ''}
                             ${result.title || "<i class='text-muted'>No title available</i>"}
                         </a>
                         <p class="text-muted small">${result.url}</p>
@@ -254,8 +254,8 @@ function setupFeedbackButtons() {
             const url = button.getAttribute('data-url');
             const isThumbsUp = button.classList.contains('thumbs-up');
             const endpoint = isThumbsUp
-                ? 'http://127.0.0.1:8000/quality/rateresult/good'
-                : 'http://127.0.0.1:8000/quality/rateresult/bad';
+                ? 'https://api.novasearch.xyz/quality/rateresult/good'
+                : 'https://api.novasearch.xyz/quality/rateresult/bad';
 
             try {
                 const response = await fetch(endpoint, {
